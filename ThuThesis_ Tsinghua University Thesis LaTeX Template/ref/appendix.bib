@@ -1,14 +1,16 @@
-@book{abrahams99tex,
-  author          = {Paul W. Abrahams and Karl Berry and Kathryn A. Hargreaves},
-  title           = {{\TeX} for the Impatient},
-  publisher       = {Addison-Wesley},
-  year            = 1990,
-}
-
-@book{salomon1995advanced,
-  author          = {David Salomon},
-  title           = {The advanced {\TeX}book},
-  address         = {New York},
-  publisher       = {Springer},
-  year            = 1995,
-}
+begin{breakablealgorithm}
+\caption{DPS Algorithm }
+\label{DPS algorithm }
+    \begin{algorithmic}[1]
+   \REQUIRE Input $N$, $y$, $\{\zeta_i\}_{i=1}^{N}$, $\{\Tilde{\sigma}_i\}_{i=1}^{T}$
+   \STATE $X_{T}\sim \mathcal{N}(0,\boldsymbol{I})$
+   \FOR{$t=T$, $T-1$, $\cdots$, 0}
+   \STATE Set $\hat{s}\xleftarrow{} s_{\theta}(t,x_t)$
+   \STATE Set $\hat{x_0} \xleftarrow{} \frac{1}{\sqrt{\Bar{\alpha}_t}}\left(x_t+\Bar{\beta}_t\hat{s}\right)$
+   \STATE Simulate $z\sim \mathcal{N}(0,\boldsymbol{I})$
+   \STATE Set $x^{\prime}_{t-1}\xleftarrow{} \frac{\sqrt{\alpha_i}\left(1-\bar{\alpha}_{t-1}\right)}{1-\bar{\alpha}_t} \boldsymbol{x}_t+\frac{\sqrt{\bar{\alpha}_{t-1}} \beta_t}{1-\bar{\alpha}_t} \hat{\boldsymbol{x}}_0+\sigma_t {z} $
+   \STATE Update $x_{t-1}\xleftarrow{} {x}_{t-1}^{\prime}-\zeta_t \nabla_{{x}_t}\left\|{y}-\mathcal{A}\left(\hat{{x}}_0\right)\right\|_2^2 $
+   \ENDFOR
+   \RETURN $\hat{x}_0$ 
+    \end{algorithmic}
+\end{breakablealgorithm}

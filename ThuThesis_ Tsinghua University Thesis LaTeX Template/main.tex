@@ -16,6 +16,28 @@
 
 % 论文基本配置，加载宏包等全局配置
 \input{thusetup}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\makeatletter
+\newenvironment{breakablealgorithm}
+  {% \begin{breakablealgorithm}
+   \begin{center}
+     \refstepcounter{algorithm}% New algorithm
+     \hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+     \renewcommand{\caption}[2][\relax]{% Make a new \caption
+       {\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+       \ifx\relax##1\relax % #1 is \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+       \else % #1 is not \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+       \fi
+       \kern2pt\hrule\kern2pt
+     }
+  }{% \end{breakablealgorithm}
+     \kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+   \end{center}
+  }
+\makeatother
 
 
 \begin{document}
@@ -23,9 +45,6 @@
 % 封面
 \maketitle
 
-% 学位论文指导小组、公开评阅人和答辩委员会名单
-% 本科生不需要
-% \input{data/committee}
 
 
 % 使用授权的说明
@@ -39,9 +58,7 @@
 % 目录
 \tableofcontents
 
-% 插图和附表清单
-% 本科生的插图索引和表格索引需要移至正文之后、参考文献前
-% \listoffiguresandtables  % 插图和附表清单（仅限研究生）
+
 \listoffigures           % 插图清单
 \listoftables            % 附表清单
 
@@ -53,10 +70,12 @@
 \mainmatter
 
 
-\input{ThuThesis_ Tsinghua University Thesis LaTeX Template/data/Background}
-\input{ThuThesis_ Tsinghua University Thesis LaTeX Template/data/introduction}
+% \input{ThuThesis_ Tsinghua University Thesis LaTeX Template/data/Background}
+% \input{ThuThesis_ Tsinghua University Thesis LaTeX Template/data/introduction}
 % \input{ThuThesis_ Tsinghua University Thesis LaTeX Template/data/Ch1}
+\input{ThuThesis_ Tsinghua University Thesis LaTeX Template/data/Solver}
 \input{ThuThesis_ Tsinghua University Thesis LaTeX Template/data/Experiment}
+
 
 % 其他部分
 \backmatter

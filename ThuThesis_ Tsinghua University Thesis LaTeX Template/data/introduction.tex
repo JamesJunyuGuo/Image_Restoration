@@ -1,5 +1,29 @@
 \chapter{文献回顾}
-\section{变分编码器（VAE Model）}
+本文的最终目的是处理条件生成下的图像修复问题，即在给定测量下的加工后图像，力求还原在原有数据集中极大似然意义下的原像。例如在图像\ref{original image }作为原始图像，如果去除图像中的部分像素点得到损坏图像\ref{inpainted image}。则我们的任务是已知原图像是属于FFHQ数据集，我们想要通过损坏图像\ref{inpainted image}来还愿得到最有可能属于原数据集的原像图像。    
+
+在该图像修复问题中，涉及一下两个难点：     
+
+1. 如何得到关于原数据集的信息，在如上例子中即为，如何获取FFHQ数据集的特征并确保最终生成图像是属于该数据集的。   
+
+2. 如何在给定损坏图像的情形下，还原得到在极大似然估计意义下该损坏图像的原像，即需要定义何为最佳原像。    
+
+为了应对上述两个核心问题，本章首先综述了无条件生成模型的相关文献，这一过程旨在掌握原始数据集分布的关键信息。随后，本文还总结了当前条件生成模型在图像修复领域的研究成果和贡献。
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[b]{0.45\linewidth}
+    \includegraphics[width=\linewidth]{ThuThesis_ Tsinghua University Thesis LaTeX Template/figures/intro/input.png}
+    \caption{原始图像}
+    \label{original image }
+  \end{minipage}
+  \hspace{0.5cm} % Space between images
+  \begin{minipage}[b]{0.45\linewidth}
+    \includegraphics[width=\linewidth]{ThuThesis_ Tsinghua University Thesis LaTeX Template/figures/intro/label.png}
+    \caption{损坏图像}
+    \label{inpainted image}
+  \end{minipage}
+\end{figure}
+\section{无条件生成模型}
+\subsection{变分编码器（VAE Model）}
 变分编码器（Variational Auto Encoder Model）是一个有效学习未知高维数据分布的生成式模型，广泛应用于图像，音频，视频等数据用用于生成相似分布的数据。在诸多Bayes模型中，通常需要构造隐式变量(Latent Variable)去用来刻画目标分布，然而通常对于隐式变量的后验分布是没有任何额外信息的，同时在许多模型下也不存在解析表达式。\par 
 首先明确VAE模型的适用问题范围，VAE模型主要用来处理i.i.d型数据点样本，利用变分推断等方法获得对该连续分布数据的逼近。
 在VAE模型中，引入了编码器(Encoder)用来逼近隐式变量的后验分布（基于现有样本），利用变分推断、极大似然估计等技术来训练解码器(Decoder)，从而利用隐式变量生成对目标样本分布的逼近。以下为变分编码器构成的图例，在图\ref{VAE model fig}中，首先中，首先将原始数据点作为输入，利用编码器可生成隐式变量。通过在隐式变量空间中重新采样，可以重新通过解码器映射到样本空间中，生成对原样本分布的逼近。
@@ -37,7 +61,7 @@ VAE模型中一个重要假设就是需要隐式变量$z$所服从的先验分�
     &= \nabla_{\phi}\mathbb{E}_{p(\epsilon)}\left[p_{\theta}(x|q(x,\phi,\epsilon)))\right]= \mathbb{E}_{p(\epsilon)}\left[\nabla_{\phi} p_{\theta}(x|q(x,\phi,\epsilon)))\right]
 \end{align}
 由此可以得到关于$\phi$的梯度，以上便为VAE模型的优化流程。
-\section{正则流}
+\subsection{正则流}
 正则流（Normalization Flow）是基于变分编码器的结构基础上提出的（见Improving Variational Auto-Encoders
 using Householder Flow）用来逼近真实的隐藏变量的先验分布$p_{\theta}(z)$。首先先由样本$x$生成$z_0$的简单分布
 （一般设为正态分布，由$x$生成$z_0$分布的均值和方差）。然后，对$z_0$进行一系列可逆变换$f^{(t)},t=1,2,\dots,T$。正则流可以将初始的密度函数通过一系列可逆的连续函数变成更加复杂的密度函数（由于实际中的隐式变量的先验分布不一定服从标准正态分布，因此通过正则流转换为实际的复杂分布）。 一旦我们选定了转换函数
@@ -85,7 +109,7 @@ $f^{(t)}$， 我们可以计算出其雅可比矩阵行列式。该方法用到�
      z_{K} &=f_{K}\circ \cdots f_1(z_0) \\
      \ln q_{K}(z_{K})&= \ln q_0(z)-\sum_{k=1}^{K}\ln |1+u_{k}^{\top}\psi_{k}(z_{k-1})|
 \end{align}
-\section{扩散模型}
+\subsection{扩散模型}
 扩散概率模型在图像生成领域已经被证明是有效的生成模型，但是其缺点在于缺乏低维的有效隐藏变量$z$。然而，VAE模型通常具有低维有效的隐藏变量，可以通过结合两者来更加有效地
 获得对高维数据分布的逼近。
 和VAE模型一样，扩散模型的目的也是希望能够学习得到目标高维样本的分布性质。 在\cite{diffusion}中详细讨论了扩散模型的性质并且介绍了扩散模型的特殊情况，即DDPM模型用来对实际应用中的高维数据进行处理。以下部分中，我们首先将对扩散模型的数学原理进行回顾。基于随机微分方程的背景，假设有一个如下的随机微分方程
@@ -112,7 +136,7 @@ $f^{(t)}$， 我们可以计算出其雅可比矩阵行列式。该方法用到�
     \label{KL upper bound 1}
 \end{equation}
 在实际优化模型中，只需要对式(\ref{score objective 2})进行最小化即可，在得到相应模型参数$\theta$后对逆向随机微分方程进行求解可以得到对目标分布的逼近。由于扩散模型只需要保证末端的随机变量$z_1$服从正态分布，因此可以选取不同的$f(t)$，$g(t)$函数来生成目标分布。在接下来的部分中将着重分析一类特殊的扩散模型：DDPM模型。（Denoising Diffusion Probabilistic Models）
-\section{降噪扩散概率模型(DDPM)}
+\subsection{降噪扩散概率模型(DDPM)}
 在本部分将重新引入新的符号，这里我们定义$x_i= z_{i/T},i=0,1,\cdots,T$。
 扩散模型为隐式变量模型满足如下形式$p_{\theta}(x_0) = \int p_{\theta}(x_{0:T}) dx_{1:T}$。其中$x_0=z_0\sim q(z_0)$为样本中的原始分布，$x_1,\cdots, x_{T}$ 为和$x_0$相同维数的隐式变量。 $x_T$对应一般扩散模型中的$z_1$，满足服从标准正态分布。由于$x_{0:T}$分别对应在$[0,1]$区间中的通过Euler法得到格点上的随机变量，由于此处可以假设$T$足够大，因此每一个相邻的条件概率分布$q(x_{i+1}|x_i)$都服从正态分布(利用布朗运动的性质)。\par 
 首先开始定义正向过程，在正向过程中，扩散模型采用一步步向样本增加白噪声的方式，使得最终获得的随机变量$x_T$的分布趋近于正态分布。我们在此处通过选取参数$\beta_1, \cdots, \beta_{T}$ 的方式来选取每次增加噪声的大小。扩散模型的目的在于先用正向过程从$x_0$过渡到$x_T$使得其分布趋近于正态分布，再利用参数化得到的逆向过程来生成对初始样本分布的逼近。仿照逆向过程联合分布函数，正向联合分布函数的形式可以写为如下的形式：（$\beta_t$用来定义相邻的条件概率分布的参数）
@@ -182,7 +206,7 @@ $x_{0:T}$的联合分布$p_{\theta}(x_{0:T})$被称为逆向过程，并且它�
     L_{t-1}-C&=\mathbb{E}_{\mathbf{x}_0, \boldsymbol{\epsilon}}\left[\frac{1}{2 \sigma_t^2}\left\|\tilde{\boldsymbol{\mu}}_t\left(\mathbf{x}_t\left(\mathbf{x}_0, \boldsymbol{\epsilon}\right), \frac{1}{\sqrt{\bar{\alpha}_t}}\left(\mathbf{x}_t\left(\mathbf{x}_0, \boldsymbol{\epsilon}\right)-\sqrt{1-\bar{\alpha}_t} \boldsymbol{\epsilon}\right)\right)-\boldsymbol{\mu}_\theta\left(\mathbf{x}_t\left(\mathbf{x}_0, \boldsymbol{\epsilon}\right), t\right)\right\|^2\right]\\
 &=\mathbb{E}_{\mathbf{x}_0, \boldsymbol{\epsilon}}\left[\frac{1}{2 \sigma_t^2}\left\|\frac{1}{\sqrt{\alpha_t}}\left(\mathbf{x}_t\left(\mathbf{x}_0, \boldsymbol{\epsilon}\right)-\frac{\beta_t}{\sqrt{1-\bar{\alpha}_t}} \boldsymbol{\epsilon}\right)-\boldsymbol{\mu}_\theta\left(\mathbf{x}_t\left(\mathbf{x}_0, \boldsymbol{\epsilon}\right), t\right)\right\|^2\right]
 \end{align}
-\section{去噪扩散隐式模型（DDIM）}
+\subsection{去噪扩散隐式模型（DDIM）}
 在DDPM的基础上，针对原模型所存在的缺陷，提出了DDIM，即去噪扩散隐式模型。在\cite{DDIM}中，针对DDPM所存在的缺陷，即每次进行优化需要生成整条Markov链需要较大计算复杂度的缺陷，提出了DDIM，即通过非Markov过程生成整条链。通过对比DDIM和DDPM的训练效果，发现DDIM可以生成更高质量的图像。接下来详细阐述DDIM模型正向生成样本的过程。
 在正向传播过程中，Markov链的似然函数可以被写成如下形式：
 \begin{equation}
@@ -209,8 +233,7 @@ f_\theta^{(t)}\left(\boldsymbol{x}_t\right):=\left(\boldsymbol{x}_t-\sqrt{1-\alp
 通过变分推断的技术，可以计算得到ELBO的值，最后可以通过优化如下目标来得到参数$\theta$
 \begin{align} & J_\sigma\left(\epsilon_\theta\right):=\mathbb{E}_{\boldsymbol{x}_{0: T} \sim q_\sigma\left(\boldsymbol{x}_{0: T}\right)}\left[\log q_\sigma\left(\boldsymbol{x}_{1: T} \mid \boldsymbol{x}_0\right)-\log p_\theta\left(\boldsymbol{x}_{0: T}\right)\right] \\ = & \mathbb{E}_{\boldsymbol{x}_{0: T} \sim q_\sigma\left(\boldsymbol{x}_{0: T}\right)}\left[\log q_\sigma\left(\boldsymbol{x}_T \mid \boldsymbol{x}_0\right)+\sum_{t=2}^T \log q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_t, \boldsymbol{x}_0\right)-\sum_{t=1}^T \log p_\theta^{(t)}\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_t\right)-\log p_\theta\left(\boldsymbol{x}_T\right)\right]\end{align}
 在实际优化中，不需要每次生成T个样本，可以只选取部分样本根据条件概率分布进行生成再进行优化。
-（可以参考DDIM中的accleration部分）
-\section{VAE模型和扩散模型的结合：隐式扩散模型}
+\subsection{VAE模型和扩散模型的结合：隐式扩散模型}
 结合扩散模型的优点，可以去除在VAE模型中隐式变量$z$的先验分布为标准正态分布的假设。在得到隐式变量$z$后，先通过一个扩散模型学习到$p_{\theta}(z_0)$用来逼近$z_0$的真实分布，然后再通过解码器生成$x$的分布。接下来我们对该混合模型的原理进行具体回顾，在\cite{VAE_diffusion}中对该方法进行了详细的阐述。对于传统VAE模型，隐含假设为隐式变量$z$的先验分布为标准正态分布，然而该假设对于现实生活中许多具有离散分布的数据并不成立。因此需要通过扩散模型去学习到真实的隐式变量的分布，接下来详细说明该模型的执行流程。
 在该模型下，我们依然只考虑如下形式的随机微分方程进行扩散
 \begin{equation}
@@ -247,3 +270,4 @@ $g(t)$满足在$t=1$时刻满足$q(z_1)=p(z_1)$，则交叉熵满足以下等式
 其中我们可以定义$\beta(t) = \beta_0+(\beta_1-\beta_0)t$,从而使得该函数取值始终在$[\beta_0,\beta_1]$内。（也可以更换该函数形式满足更加复杂的应用需求）
 在\cite{Consistency}中对一致性模型的诸多性质进行了详细的阐述。\par 
 在实际应用中，由于图像的维数相对较高，如果直接使用Diffusion Model进行训练（例如使用DDPM等模型）会带来较大的计算资源消耗，因此通常会先将图像通过编码器映射到隐空间中，通过Diffusion Model训练得到隐空间变量的真实分布，最后再通过解码器得到还原后的图像。该方法可以用于图像去噪，图像生成等下游任务。在\cite{High_synthesis}中详细阐述了使用VAE模型和Diffusion Model的结合在图像生成中的丰富应用。以及如果再充分使用Transformer模型，可以进一步实现文字转图像等丰富功能。
+\section{条件生成模型}

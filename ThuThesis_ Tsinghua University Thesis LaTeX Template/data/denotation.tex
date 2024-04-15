@@ -7,9 +7,10 @@
   \item [$q(z_t)$]表示在扩散模型中正向传播过程中随机变量的密度函数
   \item [$q(z_t\mid z_{t-1})$] 表示在扩散模型中正向传播过程中随机变量的条件分布的密度函数
   \item [$s_{\theta}(x,t)$] Score function, 在Diffusion Model 中用来计算逆向SDE的关键函数
-  \item [$p(\boldsymbol{x}_t\mid y)$] 条件似然函数，用于生成条件生成中需要拟合的新的Score function
-  \item [$\nabla_{\boldsymbol{x}_t}\log\left(p(\boldsymbol{x}_t\mid y)\right)$] 条件生成问题下的Score function
-  \item [Score matching] 
+  \item [$p({x}_t\mid y)$] 条件似然函数，用于生成条件生成中需要拟合的新的Score function
+  \item [$\nabla_{{x}_t}\log\left(p({x}_t\mid y)\right)$] 条件生成问题下的Score function
+  \item [Score matching] 通过参数拟合学习得到正确的Score function的过程
+  
   
   
   

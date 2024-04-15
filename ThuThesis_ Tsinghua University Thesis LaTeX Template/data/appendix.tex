@@ -1,15 +1,66 @@
 % !TeX root = ../thuthesis-example.tex
 
 \chapter{补充内容}
-
-附录是与论文内容密切相关、但编入正文又影响整篇论文编排的条理和逻辑性的资料，例如某些重要的数据表格、计算程序、统计表等，是论文主体的补充内容，可根据需要设置。
-
-附录中的图、表、数学表达式、参考文献等另行编序号，与正文分开，一律用阿拉伯数字编码，
-但在数码前冠以附录的序号，例如“图~\ref{fig:appendix-figure}”，
-“表~\ref{tab:appendix-table}”，“式\eqref{eq:appendix-equation}”等。
-
-
 \section{插图}
+
+
+\section{证明}
+\begin{lemma}
+    Lemma 3. Let $\phi(\cdot)$ be an isotropic multivariate Gaussian density function with mean $\boldsymbol{\mu}$ and variance $\sigma^2 \boldsymbol{I}$. There exists a constant $L$ such that $\forall \boldsymbol{x}, \boldsymbol{y} \in \mathbb{R}^d$,
+$$
+\|\phi(\boldsymbol{x})-\phi(\boldsymbol{y})\| \leq L\|\boldsymbol{x}-\boldsymbol{y}\|,
+$$
+where $L=\frac{d}{\sqrt{2 \pi \sigma^2}} e^{-1 / 2 \sigma^2}$.
+\end{lemma}
+\begin{proof}
+    \begin{align}
+\|\phi(\boldsymbol{x})-\phi(\boldsymbol{y})\| & \leq \max _{\boldsymbol{z}}\left\|\nabla_{\boldsymbol{z}} \boldsymbol{\phi}(\boldsymbol{z})\right\| \cdot\|\boldsymbol{x}-\boldsymbol{y}\| \\
+& =\underbrace{\frac{d}{\sqrt{2 \pi \sigma^2}} \exp \left(-\frac{1}{2 \sigma^2}\right)}_L \cdot\|\boldsymbol{x}-\boldsymbol{y}\|
+\end{align}
+where the second inequality comes from that each element of $\nabla_{\boldsymbol{z}} \phi(\boldsymbol{z})$ is bounded by $\frac{1}{\sqrt{2 \pi \sigma^2}} \exp \left(-\frac{1}{2 \sigma^2}\right)$.
+\end{proof}
+
+
+\begin{proposition}
+     (Jensen gap upper bound (Gao et al., 2017)). Define the absolute cenetered moment as $m_p:=\sqrt[p]{\mathbb{E}\left[|X-\mu|^p\right]}$, and the mean as $\mu=\mathbb{E}[X]$. Assume that for $\alpha>0$, there exists a positive number $K$ such that for any $x \in \mathbb{R},|f(x)-f(\mu)| \leq K|x-\mu|^\alpha$. Then,
+\begin{align}
+|\mathbb{E}[f(X)-f(\mathbb{E}[X])]| & \leq \int|f(X)-f(\mu)| d p(X) \\
+& \leq K \int|x-\mu|^\alpha d p(X) \leq M m_\alpha^\alpha
+\end{align}
+\end{proposition}
+
+\begin{theorem}[定理1的证明]
+    For the given measurement model (6) with $\boldsymbol{n} \sim \mathcal{N}\left(0, \sigma^2 \boldsymbol{I}\right)$, we have
+\begin{equation}
+  p\left(\boldsymbol{y} \mid \boldsymbol{x}_t\right) \simeq p\left(\boldsymbol{y} \mid \hat{\boldsymbol{x}}_0\right),  
+\end{equation}
+where the approximation error can be quantified with the Jensen gap, which is upper bounded by
+\begin{equation}
+    \mathcal{J} \leq \frac{d}{\sqrt{2 \pi \sigma^2}} e^{-1 / 2 \sigma^2}\left\|\nabla_{\boldsymbol{x}} \mathcal{A}(\boldsymbol{x})\right\| m_1,
+\end{equation}
+where $\left\|\nabla_{\boldsymbol{x}} \mathcal{A}(\boldsymbol{x})\right\|:=\max _{\boldsymbol{x}}\left\|\nabla_{\boldsymbol{x}} \mathcal{A}(\boldsymbol{x})\right\|$ and $m_1:=\int\left\|\boldsymbol{x}_0-\hat{\boldsymbol{x}}_0\right\| p\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right) d \boldsymbol{x}_0$.
+\begin{proof}
+ \begin{align}
+p\left(\boldsymbol{y} \mid \boldsymbol{x}_t\right) & =\int p\left(\boldsymbol{y} \mid \boldsymbol{x}_0\right) p\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right) d \boldsymbol{x}_0 \\
+& =\mathbb{E}_{\boldsymbol{x}_0 \sim p\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right)}\left[f\left(\boldsymbol{x}_0\right)\right]
+\end{align}
+
+Here, $f(\cdot):=h(\mathcal{A}(\cdot))$ where $\mathcal{A}$ is the forward operator and $h(\boldsymbol{x})$ is the multivariate normal distribution with mean $\boldsymbol{y}$ and the covariance $\sigma^2 \boldsymbol{I}$. Therefore, we have
+\begin{align}
+J\left(f, p\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right)\right) & =\left|\mathbb{E}\left[f\left(\boldsymbol{x}_0\right)\right]-f\left(\mathbb{E}\left[\boldsymbol{x}_0\right]\right)\right|=\left|\mathbb{E}\left[f\left(\boldsymbol{x}_0\right)\right]-f\left(\hat{\boldsymbol{x}}_0\right)\right| \\
+& =\left|\mathbb{E}\left[h\left(\mathcal{A}\left(\boldsymbol{x}_0\right)\right)\right]-h\left(\mathcal{A}\left(\hat{\boldsymbol{x}}_0\right)\right)\right| \\
+& \leq \int\left|h\left(\mathcal{A}\left(\boldsymbol{x}_0\right)\right)-h\left(\mathcal{A}\left(\hat{\boldsymbol{x}}_0\right)\right)\right| d P\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right) \\
+& \stackrel{\text { (b) }}{\leq} \frac{d}{\sqrt{2 \pi \sigma^2}} e^{-1 / 2 \sigma^2} \int\left\|\mathcal{A}\left(\boldsymbol{x}_0\right)-\mathcal{A}\left(\hat{\boldsymbol{x}}_0\right)\right\| d P\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right) \\
+& \stackrel{(c)}{\leq} \frac{d}{\sqrt{2 \pi \sigma^2}} e^{-1 / 2 \sigma^2}\left\|\nabla_{\boldsymbol{x}} \mathcal{A}(\boldsymbol{x})\right\| \int\left\|\boldsymbol{x}_0-\hat{\boldsymbol{x}}_0\right\| d P\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right) \\
+& \stackrel{\text { (d) }}{\leq} \frac{d}{\sqrt{2 \pi \sigma^2}} e^{-1 / 2 \sigma^2}\left\|\nabla_{\boldsymbol{x}} \mathcal{A}(\boldsymbol{x})\right\| m_1
+\end{align}
+
+where $d P\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right)=p\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right) d \boldsymbol{x}_0$, (b) is the result of Lemma 3, (c) is from the intermediate value theorem, and (d) is from Proposition 2.   
+\end{proof}
+\end{theorem}
+
+
+
 
 % % 附录中的插图示例（图~\ref{fig:appendix-figure}）。
 

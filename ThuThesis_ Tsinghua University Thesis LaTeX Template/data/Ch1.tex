@@ -1,4 +1,6 @@
 \chapter{研究问题简述}
+在本章节旨在对图像修复问题进行具体的简述，以及说明本文研究的具体问题。首先结合已有文献，对图像去噪问题的背景进行回顾以及定义必要的符号说明。
+\section{背景回顾}
 本文的主要研究问题为对目标图像进行去噪处理，得到相应去噪前的可能图像的生成。首先回顾传统生成模型的适用条件与背景。传统的扩散模型，如\cite{song_2,DDPM,DDIM}中的扩散模型，均用于实现从纯噪声图片生成原图像分布。其中最关键的步骤为Score-matching, 即为通过参数拟合学习得到真实的对数密度函数的梯度。即假设原定未知目标分布为$X_0\sim p(X_0)$, 通过构造扩散过程得到随机过程$X_{0:T}$使得$p(X_{T})\sim \mathcal{N}(0,I)$（或者使得分布趋近于标准正态分布即可）。 Score-matching即为，在选取较大的$T$的情况下，学到$\nabla_{X_t}\log (p(X_t))$的值，记该函数为Score-function。     
 
 在\cite{song_2}中主要采用解逆向随机微分方程来获得对目标未知分布的一个采样。问题设定主要如下：   
@@ -258,7 +260,6 @@ m_1:=\int_{\mathbb{R}^d}\left\|x_0-\hat{x}_0\right\| p\left(x_0 \mid x_t\right) 
 \begin{itemize}
     \item 构造DDIM模型下的条件生成任务，结合\cite{song2023pseudoinverse}中提出的Pseudoinverse 算法，在\cite{Inverse}基础上进一步增强生成效率.
     \item  尝试改善在\cite{Inverse}中较为随意的$\{\zeta_i\}_{i\geq 1}$方式，得到更加精确的后验方差估计，可结合在\cite{Analytic_DPM}中对model-free 假设下最佳后验估计的结果。
-    \item 尝试在不同数据集下使用DPS算法的生成效果，目前的DPS算法仅在FFHQ10数据集下进行实现。
-    \item \textbf{在时间允许的情况下},对原先的Unet结构加入transformer结构增强模型泛化能力。
-    
+    \item 尝试在不同数据集下使用DPS算法的生成效果，目前的DPS算法仅在FFHQ10数据集下进行实现。    
 \end{itemize}
+本文将在DPS算法\cite{Inverse}的基础上进行改进，获得对真实后验分布$p(y\mid x_t)$的更高精度逼近。

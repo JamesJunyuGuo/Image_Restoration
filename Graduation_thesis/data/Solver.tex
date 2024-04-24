@@ -1,0 +1,100 @@
+\chapter{针对条件扩散模型的高效图像修复算法}
+\section{本章引言}
+在\cite{Inverse}中，主要采用如下图像修复算法   
+
+\section{算法设计}
+\subsection{后验估计}
+通常为了获得后验证估计$p(y\mid x_t)$，我们可以将该条件概率分布写为如下形式
+\begin{equation}
+    p(y\mid x_t) = \int_{\mathbb{R}^n} p(x_0\mid x_t) p(y\mid x_0,x_t) dx_0,
+\end{equation}
+我们如果从以下角度来思考本问题，即通过逆向随机微分方程(\ref{reverse SDE conditional})先从$x_t$可以得到$x_0$， 再通过前向加噪模型(\ref{Forward model})得到$y$。根据以上模型的Markov性质可以得到
+\begin{equation}
+     p(y\mid x_0,x_t) = p(y\mid x_0).
+\end{equation}
+因此我们可以得到
+\begin{equation}
+    p(y\mid x_t) = \int_{\mathbb{R}^n} p(x_0\mid x_t) p(y\mid x_0) dx_0=\mathbb{E}\left[p(y\mid x_0)\mid x_t\right],
+    \label{conditional posterior formula}
+\end{equation}
+在\cite{Inverse}中直接采用将$\hat{x}_0=\mathbb{E}\left[x_0\mid x_t\right]$带入\ref{conditional posterior formula}用来逼近真实的后验概率分布，而此逼近方法取决于前向加噪算子$H(\cdot)$的光滑性，以及随着$x$的维数上升其逼近效果也在逐渐下降，因此本文中采用更加精确的后验估计方法进行图像还原。     
+
+
+为了得到对后验概率分布$p(y\mid x_t)$的逼近，根据\cite{pseudoinverse,ddrm}中的结论，通常可以假设条件可以分布$p(x_0\mid x_t)$可以用$\mathcal{N}(\hat{x}_0(x_t);\gamma_t^2 I)$
+来逼近，其中$\gamma_t^2 = \frac{\sigma_t^2}{1+\sigma_t^2}$。则我们可以重新用$x_t$来表示$x_0$。我们可以把$x_0$ 用$\hat{x}_0(x_t) + \gamma \epsilon$ 来逼近，其中我们有$\epsilon\sim \mathcal{N}(0,I)$为服从标准高斯分布的随机变量。 在只考虑$\mathcal{H}$为线性算子的情形下，我们将$y$表示为
+\begin{equation}
+    y=H(x_0)+n = H(\hat{x}_0+\gamma_t \epsilon)+n = H\hat{x}_0 + (H\epsilon+n).
+\end{equation}
+根据高斯分布随机变量的可叠加性，$(H\epsilon+n)$仍为高斯分布随机变量，其分布可以表示为$\mathcal{N}(0,\gamma_t^2 H^{\top}H + \sigma_y^2 I)$。因此我们最后可以将$\nabla_{x_t}\log(p(y\mid x_t))$写为
+\begin{equation}
+  -\frac{1}{2} \nabla_{x_t} \bigg((H\hat{x}_0-y)^{\top}\left(\gamma_t^2 H^{\top}H + \sigma_y^2 I\right)^{-1}(H\hat{x}_0-y)\bigg)
+\end{equation}
+利用链式法则和线性算子的性质，最后可以将$\nabla_{x_t}\log(p(y\mid x_t))$写为
+\begin{equation}
+    -\left(\gamma_t^2 H^{\top}H + \sigma_y^2 I\right)^{-1}(H\hat{x}_0-y)\frac{\partial \hat{x}_0(x_t)}{\partial x_t}
+\end{equation}
+
+\subsection{更新迭代过程}
+在\cite{Inverse}中使用如下算法来进行更新迭代，最后得到$\hat{x}_0$作为对原始图像的逼近。在每一步更新迭代中，采用两步进行。第一步，先利用预训练集得到在原始无条件分布下的score function，从而得到在无条件生成通过DDPM采样更新得到的$x_{i-1}^{\prime}$以及得到$\hat{x}_0$。 第二步， 得到通过$\nabla_{x_i}\log(y\mid \hat{x}_0)$来更新$x_{i-1}^{\prime}$得到$x_{i-1}$。具体算法流程图如下算法\ref{DPS algorithm }可见
+\begin{breakablealgorithm}
+\caption{DPS Algorithm }
+\label{DPS algorithm }
+    \begin{algorithmic}[1]
+   \REQUIRE Input $N$, $y$, $\{\zeta_i\}_{i=1}^{N}$, $\{\Tilde{\sigma}_i\}_{i=1}^{T}$
+   \STATE $X_{T}\sim \mathcal{N}(0,\boldsymbol{I})$
+   \FOR{$i$ = $N$ to 0}
+   \STATE Set $\hat{s}\xleftarrow{} s_{\theta}(x_i,i)$
+   \STATE Set $\hat{x_0} \xleftarrow{} \frac{1}{\sqrt{\Bar{\alpha}_i}}\left(x_i+(1-\Bar{\alpha}_i)\hat{s}\right)$
+   \STATE Simulate $z\sim \mathcal{N}(0,\boldsymbol{I})$
+   \STATE Set $x^{\prime}_{i-1}\xleftarrow{} \frac{\sqrt{\alpha_i}\left(1-\bar{\alpha}_{i-1}\right)}{1-\bar{\alpha}_i} \boldsymbol{x}_i+\frac{\sqrt{\bar{\alpha}_{i-1}} \beta_i}{1-\bar{\alpha}_i} \hat{\boldsymbol{x}}_0+\Tilde{\sigma}_i {z} $
+   \STATE Update $x_{i-1}\xleftarrow{} {x}_{i-1}^{\prime}-\zeta_i \nabla_{{x}_t}\left\|{y}-\mathcal{A}\left(\hat{{x}}_0\right)\right\|_2^2 $
+   \ENDFOR
+   \RETURN $\hat{x}_0$ 
+    \end{algorithmic}
+\end{breakablealgorithm}      
+
+两步迭代主要利用了在条件生成下的逆向随机微分方程的结构
+\begin{equation}
+    dx = \left(f(x,t) - g^2(t)(\nabla_{x_t}\log(p(x_t)))+ \nabla_{x_t}\log(y\mid x(t))\right)+g(t)d\Tilde{w}.
+\end{equation}
+第一步先更新除了带$\nabla_{x_t}\log(y\mid x(t))$的项，接下来再单独更新$\nabla_{x_t}\log(y\mid x(t))$的项。理论上$\nabla_{x_t}\log(y\mid x(t))$可以写为$-\frac{1}{\sigma_y^2}\nabla_{x_t}\|y-H(\hat{x}_0(x_t))\|_2^2$的形式，但是为了保证稳定性常常需要再前面乘以一个步长$\zeta_t$来保证收敛性，而在\cite{Inverse}中该步长为根据数据集本身形式人工选取，具有不稳定性和一定的随机性，不一定为最优的参数选取。如果$\sigma_y$过大则会导致每次更新步长多大如果$\sigma_y$过小则会导致每次更新步长不明显，最终生成的图片不一定能够对应损坏图片。因此在本文中采取如下方法，我们首先对应每次更新$\nabla_{x_t}\log(y\mid x(t))$项的时候的步长设置为$\eta_i$， 以及我们从$x_{i-1}^{\prime}$生成$x_{i-1}$的时候采用如下生成方式
+\begin{equation}
+    x_{i-1} \xleftarrow{} x_{i-1}^{\prime} - \eta_i \nabla_{x_i}\sqrt{((H\hat{x}_0-y)^{\top}\left(\gamma_i^2 H^{\top}H + \sigma_y^2 I\right)^{-1}(H\hat{x}_0-y)\bigg)}.
+\end{equation}
+该方法的优势在于不需要对步长刻意设置，我们在本模型中直接取$\eta_i=1$, $i=1,2,\cdots,T$， 也具有较好的稳定性。 如果直接取所有$\gamma_i=0$, $i=1,2,\cdots, T$, 则该更新方法可以写为
+\begin{equation}
+       x_{i-1} \xleftarrow{} x_{i-1}^{\prime} - \eta_i \nabla_{x_i}\|y-H(\hat{x}_0)\|_2,
+\end{equation}
+对右式继续进行化简可得
+\begin{align}
+    x_{i-1}^{\prime} - \eta_i \nabla_{x_i}\|y-H(\hat{x}_0)\|_2 &=  x_{i-1}^{\prime} - \frac{\eta_i}{\|y-H(\hat{x}_0)\|_2} H^{\top}(H\hat{x}_0-y)\frac{\partial \hat{x}_0}{\partial x_i}\\
+    & = x_{i-1}^{\prime} - {\eta_i} H^{\top}\frac{(H\hat{x}_0-y)}{\|H\hat{x}_0-y\|_2}\frac{\partial \hat{x}_0}{\partial x_i},
+\end{align}
+中间的第二项里面的$\frac{(H\hat{x}_0-y)}{\|H\hat{x}_0-y\|_2}$已经被标注化，从而$\eta_i$可以控制每次更新的幅度，在原来的算法中如果仅仅对$\nabla_{x_i}\|H\hat{x}_0-y\|_2^2$进行步长选取，当$\|H\hat{x}_0-y\|$ 已经足够小的时候则不再更新，可能会陷入局部最优的解。（例如最后得到的还原图像确实经过加噪模型可以得到损坏图像，但是与原图像有较大的区别）经过实验该更新方法也确实有更好的鲁棒性。 
+
+\subsection{算法流程}
+基于DPS算法，我们现在提出我们采用更高效率基于DDIM模型的算法。在本文的改进算法中，可以采用DDPM模型进行采样，也可以对DDPM的模型中的总步长进行分割进行切片采样。进一步，还可以利用DDIM方法来进行采样，原先使用DDPM采样方法需要进行1000步，在DDIM方法下只需要100步就可以获得质量相似的图像。本文所提出的算法流程图如下所示
+
+\begin{breakablealgorithm}
+\caption{Image Restoration Algorithm }
+\label{ours algorithm }
+    \begin{algorithmic}[1]
+   \REQUIRE Input $T$, $y$, $\{\eta_k\}_{k=1}^{T}$, $\{\sigma_k\}_{k=1}^{T}$
+   \REQUIRE Choose $\{\tau_k\}_{k=1}^{m}$ according to the sampling scheme
+   \STATE $X_{T}\sim \mathcal{N}(0,\boldsymbol{I})$
+   \FOR{$t=m$, $m-1$, $\cdots$, $0$}
+   \STATE Set $\hat{s}\xleftarrow{} s_{\theta}(\tau_t,x_{\tau_t})$
+   \STATE Set $\hat{x_0} \xleftarrow{} \frac{1}{\sqrt{\Bar{\alpha}_{\tau_t}}}\left(x_{\tau_t}+\Bar{\beta}_{\tau_t}\hat{s}\right)$
+   \STATE Simulate $z\sim \mathcal{N}(0,\boldsymbol{I})$
+   \STATE Set $x^{\prime}_{\tau_{t-1}}\xleftarrow{} \frac{\sqrt{\alpha_{\tau_t}}\left(1-\bar{\alpha}_{\tau_{t-1}}\right)}{1-\bar{\alpha}_{\tau_t}} \boldsymbol{x}_{\tau_t}+\frac{\sqrt{\bar{\alpha}_{\tau_{t-1}}} \beta_{\tau_t}}{1-\bar{\alpha}_{\tau_t}} \hat{\boldsymbol{x}}_0+\sigma_{y} {z} $
+   \STATE Update $x_{\tau_{t-1}}\xleftarrow{} {x}_{\tau_{t-1}}^{\prime}-\eta_t \nabla_{x_{\tau_t}}\sqrt{((H\hat{x}_0-y)^{\top}\left(\gamma_{\tau_t}^2 H^{\top}H + \sigma_y^2 I\right)^{-1}(H\hat{x}_0-y)\bigg)}. $
+   \ENDFOR
+   \RETURN $\hat{x}_0$ 
+    \end{algorithmic}
+\end{breakablealgorithm}
+
+\input{data/experiment}
+
+
+
+\section{本章小结}

@@ -1,0 +1,134 @@
+% !TeX encoding = UTF-8
+% !TeX program = xelatex
+% !TeX spellcheck = en_US
+
+\documentclass[degree=master]{thuthesis}
+  % 学位 degree:
+  %   doctor | master | bachelor | postdoc
+  % 学位类型 degree-type:
+  %   academic（默认）| professional
+  % 语言 language
+  %   chinese（默认）| english
+  % 字体库 fontset
+  %   windows | mac | fandol | ubuntu
+  % 建议终版使用 Windows 平台的字体编译
+
+
+% 论文基本配置，加载宏包等全局配置
+\input{thusetup}
+
+\usepackage{listings}
+\usepackage{xcolor}  % Required for adding colors
+
+% Define custom colors for highlighting
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% Setup listings configuration
+\lstset{
+    backgroundcolor=\color{backcolour},   % choose the background color
+    basicstyle=\footnotesize\ttfamily,    % size of fonts used for the code
+    breaklines=true,                      % automatic line breaking only at whitespace
+    captionpos=b,                         % sets the caption-position to bottom
+    commentstyle=\color{codegreen},       % comment style
+    keywordstyle=\color{magenta},         % keyword style
+    numberstyle=\tiny\color{codegray},    % the style that is used for the line-numbers
+    stringstyle=\color{codepurple},       % string literal style
+    frame=single,                         % adds a frame around the code
+    rulecolor=\color{black},              % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+    numbers=left,                         % where to put the line-numbers; possible values are (none, left, right)
+    numbersep=10pt,                       % how far the line-numbers are from the code
+    tabsize=4,                            % sets default tabsize to 4 spaces
+    language=bash                         % the language of the code
+}
+
+
+
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\makeatletter
+\newenvironment{breakablealgorithm}
+  {% \begin{breakablealgorithm}
+   \begin{center}
+     \refstepcounter{algorithm}% New algorithm
+     \hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+     \renewcommand{\caption}[2][\relax]{% Make a new \caption
+       {\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+       \ifx\relax##1\relax % #1 is \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+       \else % #1 is not \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+       \fi
+       \kern2pt\hrule\kern2pt
+     }
+  }{% \end{breakablealgorithm}
+     \kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+   \end{center}
+  }
+\makeatother
+
+
+\begin{document}
+
+% 封面
+\maketitle
+
+
+
+% 使用授权的说明
+\copyrightpage
+% 将签字扫描后授权文件 scan-copyright.pdf 替换原始页面
+% \copyrightpage[file=scan-copyright.pdf]
+
+\frontmatter
+\input{data/abstract}
+
+% 目录
+\tableofcontents
+
+
+\listoffigures           % 插图清单
+% \listoftables            % 附表清单
+
+% 符号对照表
+\input{data/denotation}
+
+
+% 正文部分
+\mainmatter
+
+\input{data/Background}
+\input{data/introduction}
+\input{data/Literature}
+\input{data/Solver}
+\input{data/Forward}
+\backmatter
+
+% 参考文献
+\bibliography{ref/refs}  % 
+\appendix
+\input{data/appendix-survey}       % 本科生：外文资料的调研阅读报告
+% \input{data/appendix-translation}  % 本科生：外文资料的书面翻译
+\input{data/appendix}
+
+% 致谢
+\input{data/acknowledgements}
+
+% 声明
+\statement
+% 将签字扫描后的声明文件 scan-statement.pdf 替换原始页面
+% \statement[file=scan-statement.pdf]
+% 本科生编译生成的声明页默认不加页脚，插入扫描版时再补上；
+% 研究生编译生成时有页眉页脚，插入扫描版时不再重复。
+% 也可以手动控制是否加页眉页脚
+% \statement[page-style=empty]
+% \statement[file=scan-statement.pdf, page-style=plain]
+
+
+
+% 本科生的综合论文训练记录表（扫描版）
+% \record{file=scan-record.pdf}
+
+\end{document}

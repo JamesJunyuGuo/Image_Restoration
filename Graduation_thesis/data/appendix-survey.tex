@@ -1,0 +1,39 @@
+% !TeX root = ../thuthesis-example.tex
+
+\begin{survey}
+\label{cha:survey}
+
+\title{Literature Review}
+\maketitle
+
+
+% \tableofcontents
+
+The field of image restoration has witnessed a paradigm shift with the advent of deep learning technologies.VAEs, as introduced by \cite{vae_model}, marked a significant milestone in image restoration, providing a framework for modeling complex image distributions. Based on VAE models, diffusion models have emerged as particularly potent, owing to their ability to reconstruct high-quality images from corrupted inputs. This review delves into the evolution and contributions of diffusion models, especially focusing on Score-Based Stochastic Differential Equations \cite{score_based_SDE,song_2}, Denoising Diffusion Probabilistic Models \cite{DDPM}, and Denoising Diffusion Implicit Models \cite{DDIM}, while also discussing the role of Variational Autoencoders \cite{VAE_diffusion,Consistency} and the integration of inverse learning \cite{MCG,Inverse,pseudoinverse,song2023pseudoinverse}.   Despite their contributions, the quest for models that better capture high-dimensional data distributions led to the exploration of diffusion models, which offer a novel approach to image restoration.       
+
+Diffusion models, particularly DDPM, as introduced by \cite{DDPM}, have redefined strategies for image restoration. These models use a reverse diffusion process to generate data from noise, demonstrating unparalleled performance in handling complex image degradations. Diffusion models consist of two main processes: the forward and backward processes. In the forward process, the model transforms an original image into white noise through a designed stochastic differential equation. The goal of the diffusion model is to learn the dynamics of the reverse stochastic differential equation, enabling it to perform backward sampling and thus learn the original, unknown distribution. To tune the model, references \cite{DDPM, DDIM} indicate that it updates its parameters by minimizing the KL-divergence between the empirical joint distribution of the backward process and the joint distribution of the forward process.      
+
+
+The incorporation of Score-Based Stochastic Differential Equations (SDEs) into diffusion models, as explored in \cite{score_based_SDE,song_2,Anderson1982ReversetimeDE}, has significantly advanced the field. These models utilize the score-based gradient of the data distribution to refine the denoising process, thereby enhancing the quality of restoration. To master the dynamics of the backward process, the focus shifts to learning the score function associated with the forward process.
+
+DDIM, a significant advancement beyond DDPM, was introduced by \cite{DDIM} to enhance the efficiency of the denoising process. This model dramatically accelerates image restoration while maintaining the quality of the output, underscoring its potential for real-time applications.
+
+The literature reviewed primarily illuminates the challenges of unconditional image generation. Regarding conditional image generation, there are generally three main approaches to addressing this issue.
+
+
+Manifold constraint learning has been pivotal in ensuring that restored images adhere to natural image characteristics. This approach operates under the assumption that the target distribution forms a low-dimensional manifold within the image space. Diffusion models update towards this target distribution by leveraging the manifold constraint in each step of the backward process. The integration of this concept with diffusion models, as highlighted in works like \cite{Inverse,PnP,MCG}, demonstrates significant improvements in photorealism and structural coherence.
+
+
+Recent literature has broadened the application of diffusion models in image restoration. The DDRM framework, as discussed in \cite{ddrm}, and the Pseudo Inverse Algorithm, outlined in \cite{red_diff}, present innovative approaches to image restoration tasks, showcasing the versatility and depth of diffusion-based methodologies. DDRM incorporates noised images from the forward noising models as inputs to the score function for conditional image generation. Meanwhile, the Pseudo Inverse Algorithm allows denoisers at various timesteps to impose different structural constraints on the image. These methodologies adeptly adapt to the nonlinear and iterative nature of the diffusion process, enhancing effectiveness.
+
+Furthermore, the emergence of consistency models \cite{Consistency} and Stable Diffusion \cite{vae_model} highlights ongoing innovations within the field by merging diffusion and VAE models, promising more sophisticated solutions for image restoration challenges. Stable Diffusion addresses the high dimensionality of image data by mapping it into a low-dimensional latent space using an auto-encoder. The diffusion process is then performed within this latent space. Finally, the original image is reconstructed using a pretrained decoder. 
+
+
+The exploration of diffusion models in image restoration has ushered in a new era of possibilities, with DDPM, DDIM, and the integration of Score-Based SDEs representing significant advancements. The addition of manifold constraint learning and the exploration of new models like DDRM and the Pseudo Inverse Algorithm further enrich the field. As research continues to evolve, the foundational works and recent innovations collectively point towards a future where image restoration achieves unprecedented levels of accuracy and realism.
+
+
+
+\bibliographystyle{unsrtnat}
+\bibliography{ref/refs}
+
+\end{survey}

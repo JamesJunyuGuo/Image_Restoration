@@ -1,6 +1,11 @@
 % !TeX root = ../thuthesis-example.tex
 
 \begin{denotation}[3cm]
+\item[SDE] 随机微分方程
+\item[ODE] 常微分方程
+\item[DPM] 扩散概率模型
+\item[VAE Model] 变分编码器模型
+\item[Diffusion ODE] 扩散常微分方程
   \item[$q_{\phi}(z|x)$] 表示VAE模型中的编码器，其中$\phi$为编码器的参数
   \item [$p_{\theta}(x|z)$] 表示VAE模型中的解码器，其中$\theta$代表解码器的参数
   \item [ELBO] Evident Lower Bound, 在VAE模型中使用极大似然估计进行参数拟合，在此兼顾计算效率不直接对似然函数进行极大化而对似然函数的下界进行优化，将该目标函数称为ELBO
@@ -17,6 +22,9 @@
   \item [$p(\cdot)$] 概率密度函数
   \item [$\boldsymbol{x}$] 向量随机变量
   \item [$p(\cdot;\theta)$] 由 $\theta$ 参数化的概率分布 $p(\cdot)$ 的概率密度函数
+
+  \item[$\mathcal{N}(0;I)$] 标准正态分布
+  \item[$\mathcal{N}(x\mid \mu;\sigma^2 I)$] 以$\mu$作为均值$\sigma$为方差的高维正态分布在$x$处的密度函数
   \item [$\mathbb{P}(\cdot)$] 概率值
   \item [$\alpha_t$] 扩散模型前向过程中均值的系数
   \item [$\sigma_t$] 扩散模型前向过程中的标准差
@@ -31,8 +39,16 @@
 
 \item[$f^{-1}$] 函数$f$的逆函数
 
-\item[ $\epsilon_{\theta}$] 由参数 $\theta$ 定义的噪声预测模型（
+\item[ $\epsilon_{\theta}$] 由参数 $\theta$ 定义的噪声预测模型
 
+\item[$\nabla(\cdot)$] 梯度算子
+\item[$\nabla\cdot (\cdot)$] 散度(Divergence) 算子
+
+\item[$\mathcal{O}$] 渐近上界
+
+\item[$A\subseteq B$] $A$是$B$的子集
+
+\item[$\nabla\cdot (\cdot)$] 散度(Divergence) 算子
 
   
   

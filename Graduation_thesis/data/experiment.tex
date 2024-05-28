@@ -137,7 +137,7 @@
 
 
 
-以下为在PSNR和SSIM两个度量下在不同图像修复算法下的表现，由此可以看到总体而言本文算法优于大部分图像修复算法，但是相比于在\cite{ddrm}中提出的DDRM算法仍然还有改善空间。 
+以下为在PSNR和SSIM两个度量下在不同图像修复算法下的表现，由此可以看到总体而言本文算法优于大部分图像修复算法，但是相比于在\cite{ddrm}中提出的DDRM算法仍然还有改善空间。 在图像修复任务(即Inpainting任务)中，本文所提出的算法相比于DPS算法有更好的表现，已经可以还原得到质量较高的图像。然而在整块损坏的图像修复任务中仍然不如DDRM\cite{ddrm}中所提出的算法，因为在整块挖去的情形下，对于后验分布估计相比于随机加噪的情形下无法利用损坏图像区域周围的像素点对图像进行充分还原。 
 \begin{table}[H]
     \centering
     \begin{tabular}{|c|c|c|c|c|}
@@ -154,11 +154,12 @@ Score-SDE \cite{score_based_SDE} \\
 \hline ADMM-TV & 22.17 & 0.679 & 17.96 & 0.785 \\
 \hline
 \end{tabular}
+\caption{不同算法下的图像去噪结果}
 \end{table}
 以上为使用FFHQ数据集下进行图像修复的实验结果，总体而言在进行随机图像损坏任务中，在本文的算法改进下，在PSNR度量下优于DPS算法的图像修复结果，但是效果不如DDRM算法。但是考虑到DDRM算法在每一次反向迭代过程中需要每次对加噪算子$H$进行奇异值分解并且对图像逐元素进行更新， 因此在时间复杂度上不如本文提出的算法，以及在SSIM度量下本文的算法优于DDRM算法。 以及在对图像进行整块挖出的图像修复任务中，本文提出的算法在PSNR富相俩优于DPS算法，而在SSIM度量下仍然不如DDRM算法，这是由该任务的特性决定的。在对图像进行整块挖除的情形下，由于DDRM算法在对前向加噪算子进行起奇异值分解后，在逆向过程进行反向传播的过程中可以保留原图像的未损失图像的全部信息，对于整块挖除的损坏图像可以直接保留原始未损失图像。因此在DDRM算法下只需要对损坏区域单独进行修复即可，大大增加了图像修复的处理效率。 而在本文算法中，每一次迭代过程中将图像整体作为输入统一进行修复，而不对损坏区域进行特殊处理，因此相比而言在该任务下存在劣势。    
 
 
-相比于在\cite{Inverse}中仅仅对FFHQ数据集进行测试，本文选择LSUN数据集中的Bedrooms卧室图像数据集进行测试，同样利用两种图像加噪方式 （随机加噪于整块挖除）进行实验，如下图为实验结果。
+相比于在\cite{Inverse}中仅仅对FFHQ数据集进行测试，本文选择LSUN数据集中的Bedrooms卧室图像数据集进行测试，同样利用两种图像加噪方式 （随机加噪于整块挖除）进行实验，如下图为实验结果。此处我们选取了不同图像作为例子展现图像修复的还原过程。我们在图例中放了三张图像作为对比，最左边的是加噪后的图像，最中间的是原始图像作为ground truth和还原后的图像进行对比分析，最右边的图像为经过本文图像去噪算法后还原得到后的图像。 
 \begin{figure}[H]
   \centering
   \begin{minipage}[b]{0.3\linewidth}
@@ -278,4 +279,127 @@ Score-SDE \cite{score_based_SDE} \\
   \begin{minipage}[b]{0.3\linewidth}
     \includegraphics[width=\linewidth]{Picture/progress/random/x_0000.png}
   \end{minipage}
+\end{figure}
+
+我们在FFHQ数据集上同时进行了更加丰富的实验，我们对不同图像均进行了图像修复操作，结果展示如下。 以下为在FFHQ数据集上测试的结果展示
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[b]{0.3\linewidth}
+\includegraphics[width=\linewidth]{Picture/input/00004.png}
+    \caption{加噪图像9}
+    \label{noised image }
+  \end{minipage}
+  \hspace{0.1cm} % Space between images
+   \begin{minipage}[b]{0.3\linewidth}
+    \includegraphics[width=\linewidth]{Picture/label/00004.png}
+    \caption{原始图像9}
+    \label{original image }
+  \end{minipage}
+\hspace{0.1cm}
+  \begin{minipage}[b]{0.3\linewidth}
+    \includegraphics[width=\linewidth]{Picture/recon/00004.png}
+    \caption{还原图像9}
+    \label{inpainted image}
+  \end{minipage}
+\end{figure}
+
+
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[b]{0.3\linewidth}
+\includegraphics[width=\linewidth]{Picture/input/00005.png}
+    \caption{加噪图像10}
+    \label{noised image }
+  \end{minipage}
+  \hspace{0.1cm} % Space between images
+   \begin{minipage}[b]{0.3\linewidth}
+    \includegraphics[width=\linewidth]{Picture/label/00005.png}
+    \caption{原始图像10}
+    \label{original image }
+  \end{minipage}
+\hspace{0.1cm}
+  \begin{minipage}[b]{0.3\linewidth}
+    \includegraphics[width=\linewidth]{Picture/recon/00005.png}
+    \caption{还原图像10}
+    \label{inpainted image}
+  \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[b]{0.3\linewidth}
+\includegraphics[width=\linewidth]{Picture/input/00006.png}
+    \caption{加噪图像11}
+    \label{noised image }
+  \end{minipage}
+  \hspace{0.1cm} % Space between images
+   \begin{minipage}[b]{0.3\linewidth}
+    \includegraphics[width=\linewidth]{Picture/label/00006.png}
+    \caption{原始图像11}
+    \label{original image }
+  \end{minipage}
+\hspace{0.1cm}
+  \begin{minipage}[b]{0.3\linewidth}
+    \includegraphics[width=\linewidth]{Picture/recon/00006.png}
+    \caption{还原图像11}
+    \label{inpainted image}
+  \end{minipage}
+\end{figure}
+
+
+\section{更多结果}
+本文所精心设计的图像还原算法展现出了卓越的泛化能力，这一能力使其能够轻松应对不同数据集下的图像还原任务。不论面对的是何种类型的图像数据，该算法都能够凭借其高效的运算机制，实现精准的图像还原效果。值得一提的是，这种算法的独特之处在于其对超参数的宽容性。在实际应用中，我们无需对超参数进行繁琐且精细的调整，算法便能够自动适应不同的图像特性，从而确保还原效果的稳定性和可靠性。    
+
+
+为了进一步验证这一算法的实际效果，我们特别选取了两位国际一线篮球巨星的图像进行实验。这两位篮球巨星不仅在全球范围内拥有极高的知名度和影响力，他们的形象也因其独特的个人风格和比赛风采而深入人心。通过将这些篮球巨星的图像作为实验样本，我们能够更加直观地感受到该算法在图像还原方面的卓越性能。实验结果表明，无论是对于清晰度、色彩还原度还是细节表现，该算法都展现出了令人满意的效果，充分证明了其在实际应用中的价值和潜力。
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[b]{0.3\linewidth}
+\includegraphics[width=\linewidth]{Picture/input/kun1_input.png}
+  \end{minipage}
+  \hspace{0.1cm} % Space between images
+   \begin{minipage}[b]{0.3\linewidth}
+    \includegraphics[width=\linewidth]{Picture/label/kun1_label.png}
+  \end{minipage}
+\hspace{0.1cm}
+  \begin{minipage}[b]{0.3\linewidth}
+    \includegraphics[width=\linewidth]{Picture/recon/kun1_recon.png}
+  \end{minipage}
+  \caption{球星图像修复1}
+\end{figure}
+
+
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[b]{0.3\linewidth}
+\includegraphics[width=\linewidth]{Picture/input/kun2_input.png}
+  \end{minipage}
+  \hspace{0.1cm} % Space between images
+   \begin{minipage}[b]{0.3\linewidth}
+    \includegraphics[width=\linewidth]{Picture/label/kun2_label.png}
+  \end{minipage}
+\hspace{0.1cm}
+  \begin{minipage}[b]{0.3\linewidth}
+    \includegraphics[width=\linewidth]{Picture/recon/kun2_recon.png}
+  \end{minipage}
+  \caption{球星图像修复2}
+\end{figure}
+
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[b]{0.3\linewidth}
+\includegraphics[width=\linewidth]{Picture/input/mamba_input.png}
+  \end{minipage}
+  \hspace{0.1cm} % Space between images
+   \begin{minipage}[b]{0.3\linewidth}
+    \includegraphics[width=\linewidth]{Picture/label/mamba_label.png}
+  \end{minipage}
+\hspace{0.1cm}
+  \begin{minipage}[b]{0.3\linewidth}
+    \includegraphics[width=\linewidth]{Picture/recon/mamba_recon.png}
+  \end{minipage}
+  \caption{球星图像修复3}
 \end{figure}

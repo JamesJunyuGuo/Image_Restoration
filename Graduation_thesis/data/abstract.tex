@@ -3,34 +3,38 @@
 % 中英文摘要和关键字
 
 \begin{abstract}
-  论文的摘要是对论文研究内容和成果的高度概括。
-  摘要应对论文所研究的问题及其研究目的进行描述，对研究方法和过程进行简单介绍，对研究成果和所得结论进行概括。
-  摘要应具有独立性和自明性，其内容应包含与论文全文同等量的主要信息。
-  使读者即使不阅读全文，通过摘要就能了解论文的总体内容和主要成果。
+在当今数字图像处理与计算机视觉领域，图像去噪及图像生成是核心且至关重要的问题。近年来，机器学习方法的崛起使得高质量图像的生成成为研究焦点，其中扩散模型因其出色的生成效果而受到广泛关注。深度扩散模型，由正向扩散与逆向采样两部分构成，通过训练及采样过程，逐渐逼近目标图像的分布。
 
-  论文摘要的书写应力求精确、简明。
-  切忌写成对论文书写内容进行提要的形式，尤其要避免“第 1 章……；第 2 章……；……”这种或类似的陈述方式。
+然而，在图像条件生成领域，深度学习驱动的扩散模型面临着训练难度高、表达能力有限及泛化能力不足的挑战。首先，现有模型对输入图像的噪声较为敏感，缺乏足够的鲁棒性。其次，针对特定数据集训练的扩散模型成本高昂，如何有效利用预训练集辅助条件生成成为一大难题。最后，在模型泛化方面，如何设计适用于不同图像条件生成任务（如图像修复、去模糊、超分辨率等）的高效算法，成为当前研究的热点。
 
-  关键词是为了文献标引工作、用以表示全文主要内容信息的单词或术语。
-  关键词不超过 5 个，每个关键词中间用分号分隔。
+针对上述问题，本文提出了一种高效的图像条件生成算法，其创新点主要体现在以下三个方面：
 
-  % 关键词用“英文逗号”分隔，输出时会自动处理为正确的分隔符
+首先，针对深度学习模型对噪声输入不鲁棒的问题，本文提出了一种基于扩散模型的图像去噪算法，该算法通过对后验分布似然函数的逼近，实现了对输入噪声的稳定去噪。相较于传统模型，该算法不仅具有更好的表达能力，而且函数族严格包含已有模型的函数族。
+
+其次，针对DDPM采样方法训练开销大的问题，本文利用DDIM模型中的采样方法进行分段采样，有效减少了迭代次数，从而降低了生成图片数量较大时的训练成本，使得图像修复算法得以高效实现。
+
+最后，针对条件生成算法中采样速度慢及学习率调整复杂的问题，本文提出了一种无模型依赖的学习率设置算法。该算法经过实验验证，适用于LSUN、Imagenet及FFHQ等数据集，显著提高了条件生成算法的稳定性。
+
+综上所述，本文提出的算法在图像条件生成领域具有显著的创新性和实用性，为解决当前存在的问题提供了新的思路和方法。
   \thusetup{
     keywords = { 图像修复 ,扩散模型, 神经网络, 后验估计, 分层模型},
   }
 \end{abstract}
 
 \begin{abstract*}
-  An abstract of a dissertation is a summary and extraction of research work and contributions.
-  Included in an abstract should be description of research topic and research objective, brief introduction to methodology and research process, and summary of conclusion and contributions of the research.
-  An abstract should be characterized by independence and clarity and carry identical information with the dissertation.
-  It should be such that the general idea and major contributions of the dissertation are conveyed without reading the dissertation.
+In the current field of digital image processing and computer vision, image denoising and generation have always been crucial issues. In recent years, the rise of machine learning methods has made the generation of high-quality images a research focus, with diffusion models receiving widespread attention due to their excellent generation effects. Deep diffusion models, consisting of forward diffusion and reverse sampling processes, gradually approximate the distribution of target images through training and sampling.
 
-  An abstract should be concise and to the point.
-  It is a misunderstanding to make an abstract an outline of the dissertation and words “the first chapter”, “the second chapter” and the like should be avoided in the abstract.
+However, in the realm of conditional image generation, deep learning-driven diffusion models face challenges in terms of training difficulty, limited expressive power, and insufficient generalization ability. Firstly, existing models are sensitive to noise in input images and lack sufficient robustness. Secondly, the cost of training diffusion models for specific datasets is high, and how to effectively utilize pre-trained sets to assist in conditional generation has become a major challenge. Finally, in terms of model generalization, designing efficient algorithms suitable for different conditional image generation tasks such as image restoration, deblurring, and super-resolution has become a hotspot in current research.
 
-  Keywords are terms used in a dissertation for indexing, reflecting core information of the dissertation.
-  An abstract may contain a maximum of 5 keywords, with semi-colons used in between to separate one another.
+In response to the above issues, this paper proposes an efficient algorithm for conditional image generation. The main innovations are reflected in the following three aspects:
+
+Firstly, addressing the issue of deep learning models' lack of robustness to noisy inputs, this paper proposes an image denoising algorithm based on diffusion models. By approximating the likelihood function of the posterior distribution, the algorithm achieves stable denoising of input noise. Compared to traditional models, it not only exhibits better expressive power but also strictly contains the function families of existing models.
+
+Secondly, to address the high training cost associated with the DDPM sampling method, this paper utilizes the sampling method from the DDIM model to perform segmented sampling, effectively reducing the number of iterations. This approach lowers the training cost when generating a large number of images, enabling efficient implementation of image restoration algorithms.
+
+Finally, addressing the issues of slow sampling speed and the complexity of manually adjusting learning rates in conditional generation algorithms, this paper proposes a model-free learning rate setting algorithm. Experimental verification has shown that this algorithm is suitable for datasets such as LSUN, Imagenet, and FFHQ, significantly improving the stability of conditional generation algorithms.
+
+In summary, the algorithm proposed in this paper exhibits significant innovation and practicality in the field of conditional image generation, providing new ideas and methods for addressing existing problems.
 
   % Use comma as separator when inputting
   \thusetup{

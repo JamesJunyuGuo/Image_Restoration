@@ -15,7 +15,7 @@
 \label{VP-SDE def}
     我们定义如下随机微分方程为VP-SDE，即Variance Preserving SDE。对于随机过程$\{x_t\}_{t\in [0,1]}$, 满足随机微分方程
     \begin{equation}
-   \mathrm{d} \mathbf{x}=-\frac{1}{2} \beta(t) \cdot \mathbf{x} \mathrm{d} t+\sqrt{\beta(t)} \mathrm{d} \mathbf{w} \label{VP-SDE equation} 
+   \mathrm{d} \mathbf{x}=-\frac{1}{2} \beta(t) \cdot \mathbf{x} \mathrm{d} t+\sqrt{\beta(t)} \mathrm{d} \mathbf{w}, \label{VP-SDE equation} 
     \end{equation}
     该随机过程满足如果初始输入$x_0$为标准化后\footnote{满足数学期望为0，方差为1的随机变量}的随机变量，则对于任意$t\in [0,1]$，我们都有
     \begin{equation}
@@ -44,7 +44,7 @@
 同时我们引入另一类常见在扩散模型中使用的随机微分方程，即方差爆炸随机微分方程，见如下定义。
 \begin{definition}[VE-SDE, 方差爆炸随机微分方程]我们定义以下随机微分方程为VE-SDE，即Variance Exploding SDE。对于随机过程$\{x_t\}_{t\in [0,1]}$, 满足随机微分方程
     \begin{equation}
-        dx = \sqrt{\frac{d\left[\sigma^2(t)\right]}{dt}}\mathbf{d}\mathbf{w}, \label{VE-SDE}
+        dx_t = \sqrt{\frac{d\left[\sigma^2(t)\right]}{dt}}\mathbf{d}\mathbf{w}, \label{VE-SDE}
     \end{equation}
     其中$\sigma(t)$为$[0,\infty]\xrightarrow{}\mathbb{R}^+$的严格递增光滑函数满足$\sigma(0)=0$，当$t\to \infty$,我们有 $\sigma(t)\xrightarrow{}\infty$。
     对于满足随机微分方程(\ref{VE-SDE})的随机过程$\{x_t\}_{t\geq 0}$，随着$t\to \infty$， 有$\operatorname{Var}(x_t)\xrightarrow{}\infty$，因此称其为方差爆炸方程。 
@@ -55,7 +55,7 @@
 \begin{theorem}[逆向随机微分方程]
 在已知(\ref{diffusion equation SDE 1}) 的形式的情形下，存在以$x_1$为初始值的逆向随机微分方程
 \begin{equation}
-     dx = \left(f(x,t)-g^2(t)\nabla_{x_t}\log(q_t(x_t))\right)dt + g(t)d\Tilde{w}_t,
+     dx_t= \left(f(x,t)-g^2(t)\nabla_{x_t}\log(q_t(x_t))\right)dt + g(t)d\Tilde{w}_t,
     \label{reverse diffusion equation SDE 1}
 \end{equation}
 其中$\{\Tilde{w}_t\}_{t\in [0,1]}$也为标准布朗运动，我们定义$s(t,x_t) = \nabla_{x_t}\log(q_t(x_t))$ 为打分函数(score function)。
@@ -84,30 +84,28 @@
     \label{DDPM Equation}
 \end{equation}
 在进行离散化取样生成正向传播链的时候，可以表达为目标分布为$x_0$，从$x_0$开始正向传播生成$x_{1:T}$, 满足条件概率分布为
-\begin{equation}
-    q\left(x_{1: T} \mid x_0\right)=\prod_{t=1}^T q\left(x_t \mid x_{t-1}\right)
-    \end{equation}
-    \begin{equation}
-        q\left(x_t \mid x_{t-1}\right)=\mathcal{N}\left(\sqrt{1-\beta_t} x_{t-1}, \beta_t I\right)
-        \end{equation}
+\begin{align}
+    q\left(x_{1: T} \mid x_0\right)&=\prod_{t=1}^T q\left(x_t \mid x_{t-1}\right),\\
+        q\left(x_t \mid x_{t-1}\right)&=\mathcal{N}\left(\sqrt{1-\beta_t} x_{t-1}, \beta_t I\right),
+        \end{align}
         \begin{equation}
-            q\left(x_t \mid x_0\right)=\mathcal{N}\left(\sqrt{\bar{\alpha}_t} x_0,\left(1-\overline{\alpha_t}\right) I\right) \text { 其中 } \alpha_t=\left(1-\beta_t\right) \text { 以及 } \bar{\alpha}_t=\prod_t \alpha_t
+            q\left(x_t \mid x_0\right)=\mathcal{N}\left(\sqrt{\bar{\alpha}_t} x_0,\left(1-\overline{\alpha_t}\right) I\right) \text { 其中 } \alpha_t=\left(1-\beta_t\right) \text { 以及 } \bar{\alpha}_t=\prod_t \alpha_t,
             \label{posterior of xt}
             \end{equation}
     正向传播的后验分布同样可以被给出：
     \begin{equation}
-        q\left(x_{t-1} \mid x_t, x_0\right)=\mathcal{N}\left(\tilde{\mu}_t\left(x_t, x_0\right), \tilde{\beta}_t\right)
+        q\left(x_{t-1} \mid x_t, x_0\right)=\mathcal{N}\left(\tilde{\mu}_t\left(x_t, x_0\right), \tilde{\beta}_t\right),
         \label{posterior xt 2}
         \end{equation}
         \begin{equation}
-            \text {     其中 } \tilde{\mu}_t\left(x_t, x_0\right)=\frac{\sqrt{\bar{\alpha}_{t-1}} \beta_t}{1-\bar{\alpha}_t} x_0+\frac{\sqrt{\alpha_t}\left(1-\bar{\alpha}_{t-1}\right)}{1-\bar{\alpha}_t} x_t
+            \text {     其中 } \tilde{\mu}_t\left(x_t, x_0\right)=\frac{\sqrt{\bar{\alpha}_{t-1}} \beta_t}{1-\bar{\alpha}_t} x_0+\frac{\sqrt{\alpha_t}\left(1-\bar{\alpha}_{t-1}\right)}{1-\bar{\alpha}_t} x_t,
             \end{equation}
             \begin{equation}
-                \text { 以及 } \quad \tilde{\beta}_t=\frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_t} \beta_t
+                \text { 以及 } \quad \tilde{\beta}_t=\frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_t} \beta_t.
                 \end{equation}
 该正向过程实际上对应的随机微分方程即为
 \begin{equation}
-    dz = -\frac{g^2(t)}{2}\cdot  z dt + g(t)dw
+    dz = -\frac{g^2(t)}{2}\cdot  z dt + g(t)dw,
 \end{equation}
 $x_{0:T}$的联合分布$p_{\theta}(x_{0:T})$被称为逆向过程，并且它被定义为一个Markov过程，该过程的转移分布可以从末端$p(x_T)= \mathcal{N}(x_T;0,I) $开始。由此可以写出逆向过程的联合分布函数的表达式
 \begin{equation}
@@ -116,12 +114,10 @@ $x_{0:T}$的联合分布$p_{\theta}(x_{0:T})$被称为逆向过程，并且它�
 
 以上为正向Markov过程所满足的条件概率分布性质，在随机优化问题中为了优化参数需要对逆向传播过程进行建模。
 逆向传播过程同样可以被参数化，此处使用高斯转移分布来进行此一阶Markov逆向传播过程，满足如下表达式：
-\begin{equation}
-    p\left(x_{0: T}\right)=p\left(x_T\right) \prod_{t=1}^T p_\theta\left(x_{t-1} \mid x_t\right)
-    \end{equation}
-    \begin{equation}
-        p_\theta\left(x_{t-1} \mid x_t\right)=\mathcal{N}\left(\mu_\theta\left(x_t, t\right), \Sigma_\theta\left(x_t, t\right)\right)
-        \end{equation}
+\begin{align}
+    p\left(x_{0: T}\right)&=p\left(x_T\right) \prod_{t=1}^T p_\theta\left(x_{t-1} \mid x_t\right),\\
+        p_\theta\left(x_{t-1} \mid x_t\right)&=\mathcal{N}\left(\mu_\theta\left(x_t, t\right), \Sigma_\theta\left(x_t, t\right)\right),
+        \end{align}
         % \begin{figure}[H]
         %     \centering
         %     \includegraphics[scale = 0.2]{ThuThesis_ Tsinghua University Thesis LaTeX Template/Picture/Diffusion.png}
@@ -132,28 +128,28 @@ $x_{0:T}$的联合分布$p_{\theta}(x_{0:T})$被称为逆向过程，并且它�
 整个概率系统可以通过变分推断来进行端到端的训练，从而优化参数。
 在该模型下，同样采用极大似然估计的方式来进行参数优化，此处采用最大化对数似然函数的相反数的上界来进行优化，即
 \begin{equation}
-    \mathbb{E}\left[-\log p_\theta\left(\mathbf{x}_0\right)\right] \leq \mathbb{E}_q\left[-\log \frac{p_\theta\left(\mathbf{x}_{0: T}\right)}{q\left(\mathbf{x}_{1: T} \mid \mathbf{x}_0\right)}\right]=\mathbb{E}_q\left[-\log p\left(\mathbf{x}_T\right)-\sum_{t \geq 1} \log \frac{p_\theta\left(\mathbf{x}_{t-1} \mid \mathbf{x}_t\right)}{q\left(\mathbf{x}_t \mid \mathbf{x}_{t-1}\right)}\right]=: L
+    \mathbb{E}\left[-\log p_\theta\left(\mathbf{x}_0\right)\right] \leq \mathbb{E}_q\left[-\log \frac{p_\theta\left(\mathbf{x}_{0: T}\right)}{q\left(\mathbf{x}_{1: T} \mid \mathbf{x}_0\right)}\right]=\mathbb{E}_q\left[-\log p\left(\mathbf{x}_T\right)-\sum_{t \geq 1} \log \frac{p_\theta\left(\mathbf{x}_{t-1} \mid \mathbf{x}_t\right)}{q\left(\mathbf{x}_t \mid \mathbf{x}_{t-1}\right)}\right],
     \label{DDPM objective 1}
 \end{equation}
 从随机优化方法的角度去考虑，可以将式(\ref{DDPM objective 1})重新写为
 \begin{equation}
-\mathbb{E}_q[\underbrace{\mathcal{D}_{K L}\left(q\left(x_T \mid x_0\right) \| p\left(x_T\right)\right)}_{L_T}+\sum_{t>1} \underbrace{\mathcal{D}_{K L}\left(q\left(x_{t-1} \mid x_t, x_0\right) \| p_\theta\left(x_{t-1} \mid x_t\right)\right)}_{L_{t-1}}-\underbrace{\log p_\theta\left(x_0 \mid x_1\right)}_{L_0}]
+\mathbb{E}_q[\underbrace{\mathcal{D}_{K L}\left(q\left(x_T \mid x_0\right) \| p\left(x_T\right)\right)}_{L_T}+\sum_{t>1} \underbrace{\mathcal{D}_{K L}\left(q\left(x_{t-1} \mid x_t, x_0\right) \| p_\theta\left(x_{t-1} \mid x_t\right)\right)}_{L_{t-1}}-\underbrace{\log p_\theta\left(x_0 \mid x_1\right)}_{L_0}],
     \end{equation}
 以上为DDPM的数学原理，以下将具体讨论DDPM在实际优化过程中的参数设计与模型细节。以上已经将$L$分解成$L_T,L_{t-1},L_0$三大部分，由于后验分布$q$没有任何参数，因此$L_T$可以直接忽略（和$\theta$取值近似无关）。
 在\cite{DDPM}中直接假设$\Sigma_{\theta}(x_t,t)=\sigma_t^2 I$，方便简化计算过程（避免矩阵求逆运算操作）。其次，为了表示$\mu_{\theta}(x_t,t)$，由于$p_{\theta}(x_{t-1}|x_t):= \mathcal{N}(x_{t-1};\mu_{\theta}(x_t,t),\sigma_t^2I)$,我们可以将$L_{t-1}$写为
 \begin{equation}
-    L_{t-1}=\mathbb{E}_q\left[\frac{1}{2 \sigma_t^2}\left\|\tilde{{\mu}}_t\left(\mathbf{x}_t, \mathbf{x}_0\right)-{\mu}_\theta\left(\mathbf{x}_t, t\right)\right\|^2\right]+C
+    L_{t-1}=\mathbb{E}_q\left[\frac{1}{2 \sigma_t^2}\left\|\tilde{{\mu}}_t\left(\mathbf{x}_t, \mathbf{x}_0\right)-{\mu}_\theta\left(\mathbf{x}_t, t\right)\right\|^2\right]+C,
     \label{Lt representation}
 \end{equation}
 其中$C$为一个和$\theta$无关的常数，在优化过程中可以被忽略。利用式(\ref{posterior of xt})可以进一步简化式(\ref{Lt representation}) 将$x_t$表示为$\mathbf{x}_t\left(\mathbf{x}_0, {\epsilon}\right)=\sqrt{\bar{\alpha}_t} \mathbf{x}_0+\sqrt{1-\bar{\alpha}_t} {\epsilon} \text { for } {\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) $, 以及利用式(\ref{posterior xt 2})可以得到
 \begin{align}
     L_{t-1}-C&=\mathbb{E}_{\mathbf{x}_0, {\epsilon}}\left[\frac{1}{2 \sigma_t^2}\left\|\tilde{{\mu}}_t\left(\mathbf{x}_t\left(\mathbf{x}_0, {\epsilon}\right), \frac{1}{\sqrt{\bar{\alpha}_t}}\left(\mathbf{x}_t\left(\mathbf{x}_0, {\epsilon}\right)-\sqrt{1-\bar{\alpha}_t} {\epsilon}\right)\right)-{\mu}_\theta\left(\mathbf{x}_t\left(\mathbf{x}_0, {\epsilon}\right), t\right)\right\|^2\right]\\
-&=\mathbb{E}_{\mathbf{x}_0, {\epsilon}}\left[\frac{1}{2 \sigma_t^2}\left\|\frac{1}{\sqrt{\alpha_t}}\left(\mathbf{x}_t\left(\mathbf{x}_0, {\epsilon}\right)-\frac{\beta_t}{\sqrt{1-\bar{\alpha}_t}} {\epsilon}\right)-{\mu}_\theta\left(\mathbf{x}_t\left(\mathbf{x}_0, {\epsilon}\right), t\right)\right\|^2\right]
+&=\mathbb{E}_{\mathbf{x}_0, {\epsilon}}\left[\frac{1}{2 \sigma_t^2}\left\|\frac{1}{\sqrt{\alpha_t}}\left(\mathbf{x}_t\left(\mathbf{x}_0, {\epsilon}\right)-\frac{\beta_t}{\sqrt{1-\bar{\alpha}_t}} {\epsilon}\right)-{\mu}_\theta\left(\mathbf{x}_t\left(\mathbf{x}_0, {\epsilon}\right), t\right)\right\|^2\right],
 \end{align}
 经过\cite{DDPM,score_based_SDE}中的计算化简，\ref{DDPM objective 1}实际上可以化简为
 \begin{equation}
-    \mathbb{E}_{t\sim \mathcal{U}(0,1),\epsilon\sim \mathcal{N}(0,I)}\left[\|\epsilon - \epsilon^{\theta}(x_t,t)\|^2\right]
-\end{equation}
+    \mathbb{E}_{t\sim \mathcal{U}(0,1),\epsilon\sim \mathcal{N}(0,I)}\left[\|\epsilon - \epsilon^{\theta}(x_t,t)\|^2\right],
+    \end{equation}
 而此时的打分函数满足$s^{\theta}(x_t,t) =- \frac{1}{\sqrt{\Bar{\beta}_t}}\epsilon^{\theta}(x_t,t)$,取 $\mu^{\theta}(x_t,t) = \frac{1}{\sqrt{\Bar{\alpha}_t}}\left(x_t- \sqrt{\Bar{\beta}_t}\epsilon^{\theta}(x_t,t)\right)$。 以上为DDPM主要的实现原理与优化过程。
 
 在当下利用Diffusion Model实现图像去噪，图像修损任务中的研究中，主要采用DDPM模型中的随机微分方程进行向前扩散，以及采用和Langevin dynamic 中进行Score matching的方法进行混合使用提升收敛速率。但是实质并没有充分利用图像加噪和去噪随机变量之间的条件分布，本质上是在实现更高效率的生成式模型进行图像还原。下面进行前向加噪模型的一般形式阐述。
@@ -221,7 +217,7 @@ y=\mathcal{H}\left(x_0\right)+{n}, \quad y, {n} \in \mathbb{R}^n, x \in \mathbb{
 
 借鉴\cite{DDPM}中的原理，可以选取形式较为简单的随机微分方程形式来实现扩散模型。例如在式(\ref{VE-SDE})中定义的VE SDE(Variance Exploding SDE)下，选取$f(x,t)=0$以及$g(t) = \sqrt{\frac{d}{dt}\sigma^2(t)}$，则相邻两个随机变量的采样过程可以表示为
 \begin{equation}
-    x_{(i+1)} = x_{i}+\sqrt{\sigma_i^2-\sigma_{i-1}^2}z_{i-1}, z_{i-1}\sim \mathcal{N}(0,I)
+    x_{(i+1)} = x_{i}+\sqrt{\sigma_i^2-\sigma_{i-1}^2}z_{i-1}, z_{i-1}\sim \mathcal{N}(0,I),
 \end{equation}
 
 
@@ -235,7 +231,7 @@ y=\mathcal{H}\left(x_0\right)+{n}, \quad y, {n} \in \mathbb{R}^n, x \in \mathbb{
 \end{equation}
 在进行非去噪任务，单纯进行非条件生成的时候，逆向生成可以采用如下方式：
 \begin{equation}
-    x_{t-1}=\frac{\sigma_{t-1}^2}{\sigma_t^2} x_t+\left(1-\frac{\sigma_{t-1}^2}{\sigma_t^2}\right) \hat{x}_0\left(x_t\right)+\frac{\sigma_{t-1}}{\sigma_t} \sqrt{\sigma_t^2-\sigma_{t-1}^2} \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)
+    x_{t-1}=\frac{\sigma_{t-1}^2}{\sigma_t^2} x_t+\left(1-\frac{\sigma_{t-1}^2}{\sigma_t^2}\right) \hat{x}_0\left(x_t\right)+\frac{\sigma_{t-1}}{\sigma_t} \sqrt{\sigma_t^2-\sigma_{t-1}^2} \epsilon, \quad \epsilon \sim \mathcal{N}(0, I) ，
 \end{equation}
 其中我们有$\hat{x}_0\left(x_t\right)=\mathbb{E}\left[x_0 \mid x_t\right]=x_t+\sigma_t^2 \nabla_{x_t} \log p_t\left(x_t\right)$, 则我们可以将如上生成公式写成如下形式
 \begin{equation}
@@ -252,13 +248,13 @@ y=\mathcal{H}\left(x_0\right)+{n}, \quad y, {n} \in \mathbb{R}^n, x \in \mathbb{
         
         2.再生成白噪声用于后续生成，即生成噪声$z$,
 \begin{equation}
-    {z} \sim \mathcal{N}(\mathbf{0}, {I}) 
+    {z} \sim \mathcal{N}(\mathbf{0}, {I}), 
 \end{equation}
       
       
       3. 最后再根据DDPM下的采样方法进行条件采样
 \begin{equation}
-     {x}_{i-1}^{\prime} \leftarrow \frac{\sqrt{\alpha_i}\left(1-\bar{\alpha}_{i-1}\right)}{1-\bar{\alpha}_i} {x}_i+\frac{\sqrt{\bar{\alpha}_{i-1}} \beta_i}{1-\bar{\alpha}_i} \hat{{x}}_0+\tilde{\sigma}_i {z}
+     {x}_{i-1}^{\prime} \leftarrow \frac{\sqrt{\alpha_i}\left(1-\bar{\alpha}_{i-1}\right)}{1-\bar{\alpha}_i} {x}_i+\frac{\sqrt{\bar{\alpha}_{i-1}} \beta_i}{1-\bar{\alpha}_i} \hat{{x}}_0+\tilde{\sigma}_i {z},
 \end{equation}
 
 
@@ -267,9 +263,9 @@ y=\mathcal{H}\left(x_0\right)+{n}, \quad y, {n} \in \mathbb{R}^n, x \in \mathbb{
 \begin{proposition}
 \label{prop 1}
      在使用DDPM条件下的随机微分方程进行向前采样的扩散模型下, $p\left(x_0 \mid x_t\right)$ 有唯一的后验概率分布下的数学期望
-$$
-\hat{x}_0:=\mathbb{E}\left[x_0 \mid x_t\right]=\frac{1}{\sqrt{\bar{\alpha}(t)}}\left(x_t+(1-\bar{\alpha}(t)) \nabla_{x_t} \log p_t\left(x_t\right)\right)
-$$
+\begin{equation}
+    \hat{x}_0:=\mathbb{E}\left[x_0 \mid x_t\right]=\frac{1}{\sqrt{\bar{\alpha}(t)}}\left(x_t+(1-\bar{\alpha}(t)) \nabla_{x_t} \log p_t\left(x_t\right)\right).
+\end{equation}
 \end{proposition}
 \begin{theorem}
 \label{thm 1}
@@ -290,7 +286,7 @@ $$
 \end{equation}
 以及
 \begin{equation}
-m_1:=\int_{\mathbb{R}^d}\left\|x_0-\hat{x}_0\right\| p\left(x_0 \mid x_t\right) d x_0  
+m_1:=\int_{\mathbb{R}^d}\left\|x_0-\hat{x}_0\right\| p\left(x_0 \mid x_t\right) d x_0 .
 \end{equation}
 \end{theorem}
 为了证明如上结论，我们需要引入如下引理，首先引入引理\ref{lemma 3}和命题\ref{proposition 2 }
@@ -306,7 +302,7 @@ m_1:=\int_{\mathbb{R}^d}\left\|x_0-\hat{x}_0\right\| p\left(x_0 \mid x_t\right) 
 \begin{proof}
     \begin{align}
 \|\phi(\boldsymbol{x})-\phi(\boldsymbol{y})\| & \leq \max _{\boldsymbol{z}}\left\|\nabla_{\boldsymbol{z}} \boldsymbol{\phi}(\boldsymbol{z})\right\| \cdot\|\boldsymbol{x}-\boldsymbol{y}\| \\
-& =\underbrace{\frac{d}{\sqrt{2 \pi \sigma^2}} \exp \left(-\frac{1}{2 \sigma^2}\right)}_L \cdot\|\boldsymbol{x}-\boldsymbol{y}\|
+& =\underbrace{\frac{d}{\sqrt{2 \pi \sigma^2}} \exp \left(-\frac{1}{2 \sigma^2}\right)}_L \cdot\|\boldsymbol{x}-\boldsymbol{y}\|,
 \end{align}
 
 其中第二个不等式可以通过$\nabla_{\boldsymbol{z}} \phi(\boldsymbol{z})$的每个元素有上界$\frac{1}{\sqrt{2 \pi \sigma^2}} \exp \left(-\frac{1}{2 \sigma^2}\right)$得到.
@@ -319,7 +315,7 @@ m_1:=\int_{\mathbb{R}^d}\left\|x_0-\hat{x}_0\right\| p\left(x_0 \mid x_t\right) 
      我们定义绝对中心矩为$m_p:=\sqrt[p]{\mathbb{E}\left[|X-\mu|^p\right]}$, 以及定义均值为$\mu=\mathbb{E}[X]$. 假设对于 $\alpha>0$, 存在一个正常数$K$ 满足对于任意 $x \in \mathbb{R},|f(x)-f(\mu)| \leq K|x-\mu|^\alpha$，则我们可以得到
 \begin{align}
 |\mathbb{E}[f(X)-f(\mathbb{E}[X])]| & \leq \int|f(X)-f(\mu)| d p(X) \\
-& \leq K \int|x-\mu|^\alpha d p(X) \leq M m_\alpha^\alpha
+& \leq K \int|x-\mu|^\alpha d p(X) \leq M m_\alpha^\alpha,
 \end{align}
 \end{proposition}
 
@@ -336,7 +332,7 @@ m_1:=\int_{\mathbb{R}^d}\left\|x_0-\hat{x}_0\right\| p\left(x_0 \mid x_t\right) 
 \begin{proof}
  \begin{align}
 p\left(\boldsymbol{y} \mid \boldsymbol{x}_t\right) & =\int p\left(\boldsymbol{y} \mid \boldsymbol{x}_0\right) p\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right) d \boldsymbol{x}_0 \\
-& =\mathbb{E}_{\boldsymbol{x}_0 \sim p\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right)}\left[f\left(\boldsymbol{x}_0\right)\right]
+& =\mathbb{E}_{\boldsymbol{x}_0 \sim p\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right)}\left[f\left(\boldsymbol{x}_0\right)\right],
 \end{align}
 
 其中这里我们有, $f(\cdot):=h(\mathcal{A}(\cdot))$ 其中 $\mathcal{A}$ 为前向加噪算子，  $h(\boldsymbol{x})$ 为高维多元正态分布，有均值 $\boldsymbol{y}$ 与协方差矩阵 $\sigma^2 \boldsymbol{I}$。 因此，我们可以得到
@@ -346,7 +342,7 @@ J\left(f, p\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right)\right) & =\left|\
 & \leq \int\left|h\left(\mathcal{A}\left(\boldsymbol{x}_0\right)\right)-h\left(\mathcal{A}\left(\hat{\boldsymbol{x}}_0\right)\right)\right| d P\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right) \\
 & \stackrel{\text { (b) }}{\leq} \frac{d}{\sqrt{2 \pi \sigma^2}} e^{-1 / 2 \sigma^2} \int\left\|\mathcal{A}\left(\boldsymbol{x}_0\right)-\mathcal{A}\left(\hat{\boldsymbol{x}}_0\right)\right\| d P\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right) \\
 & \stackrel{(c)}{\leq} \frac{d}{\sqrt{2 \pi \sigma^2}} e^{-1 / 2 \sigma^2}\left\|\nabla_{\boldsymbol{x}} \mathcal{A}(\boldsymbol{x})\right\| \int\left\|\boldsymbol{x}_0-\hat{\boldsymbol{x}}_0\right\| d P\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right) \\
-& \stackrel{\text { (d) }}{\leq} \frac{d}{\sqrt{2 \pi \sigma^2}} e^{-1 / 2 \sigma^2}\left\|\nabla_{\boldsymbol{x}} \mathcal{A}(\boldsymbol{x})\right\| m_1
+& \stackrel{\text { (d) }}{\leq} \frac{d}{\sqrt{2 \pi \sigma^2}} e^{-1 / 2 \sigma^2}\left\|\nabla_{\boldsymbol{x}} \mathcal{A}(\boldsymbol{x})\right\| m_1,
 \end{align}
 
 其中$d P\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right)=p\left(\boldsymbol{x}_0 \mid \boldsymbol{x}_t\right) d \boldsymbol{x}_0$, (b) 可以利用如上引理\ref{lemma 3}得到, (c) 可以用中值定理得到, 最后 (d) 可以直接由命题\ref{proposition 2 } 得到。 
